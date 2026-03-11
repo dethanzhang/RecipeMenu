@@ -1,0 +1,183 @@
+---
+import Layout from '../layouts/Layout.astro';
+import DishCard from '../components/DishCard.astro';
+import { getCollection } from 'astro:content';
+
+const dishes = await getCollection('dishes', ({ id }) => !id.startsWith('_'));
+
+// 按分类分组
+const categories = [...new Set(dishes.map(d => d.data.category))];
+const dishesByCategory = categories.map(cat => ({
+  name: cat,
+  dishes: dishes.filter(d => d.data.category === cat)
+}));
+
+// 获取所有标签
+const allTags = [...new Set(dishes.flatMap(d => d.data.tags || []))];
+---
+
+<Layout title="私房菜单">
+  <div class="container">
+    <!-- 顶部介绍 -->
+    <section class="hero">
+      <h1>今日推荐</h1>
+      <p class="subtitle">精心烹制，美味可口</p>
+    </section>
+
+    <!-- 标签筛选 -->
+    {allTags.length > 0 && (
+      <section class="filter-section">
+        <div class="tags-filter" id="tags-filter">
+          <button class="tag-btn active" data-filter="all">全部</button>
+          {allTags.map(tag => (
+            <button class="tag-btn" data-filter={tag}>{tag}</button>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <!-- 菜品列表 -->
+    <div id="menu-content">
+      {dishesByCategory.map(({ name, dishes }) => (
+        <section class="category-section" data-category={name}>
+          <h2 class="category-title">{name}</h2>
+          <div class="dishes-grid">
+            {dishes.map(dish => (
+              <DishCard dish={dish} />
+            ))}
+          </div>
+        </section>
+      ))}
+    </div>
+
+    <!-- 简单计数 -->
+    <div class="menu-footer">
+      <p>共 {dishes.length} 道美味</p>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  // 简单的标签筛选功能
+  const tagButtons = document.querySelectorAll('.tag-btn');
+  const dishCards = document.querySelectorAll('.dish-card');
+
+  tagButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const filter = btn.dataset.filter;
+
+      // 更新按钮状态
+      tagButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      // 筛选卡片
+      dishCards.forEach(card => {
+        if (filter === 'all') {
+          card.style.display = 'block';
+        } else {
+          const tags = card.querySelectorAll('.tag');
+          const hasTag = Array.from(tags).some(t => t.textContent === filter);
+          card.style.display = hasTag ? 'block' : 'none';
+        }
+      });
+
+      // 显示/隐藏分类标题
+      document.querySelectorAll('.category-section').forEach(section => {
+        const visibleCards = section.querySelectorAll('.dish-card[style="display: block;"], .dish-card:not([style*="none"])');
+        section.style.display = visibleCards.length > 0 ? 'block' : 'none';
+      });
+    });
+  });
+</script>
+
+<style>
+  .hero {
+    text-align: center;
+    padding: 32px 0 24px;
+  }
+
+  .hero h1 {
+    color: var(--color-primary);
+    margin-bottom: 8px;
+  }
+
+  .subtitle {
+    color: var(--color-text-light);
+    font-size: 1rem;
+  }
+
+  .filter-section {
+    margin-bottom: 24px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .tags-filter {
+    display: flex;
+    gap: 8px;
+    padding-bottom: 4px;
+    white-space: nowrap;
+  }
+
+  .tag-btn {
+    padding: 8px 16px;
+    border: 1px solid var(--color-border);
+    background: var(--color-card);
+    border-radius: 20px;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--color-text);
+  }
+
+  .tag-btn:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+
+  .tag-btn.active {
+    background: var(--color-primary);
+    color: white;
+    border-color: var(--color-primary);
+  }
+
+  .category-section {
+    margin-bottom: 32px;
+  }
+
+  .category-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding-left: 12px;
+    border-left: 4px solid var(--color-primary);
+  }
+
+  .dishes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  @media (max-width: 640px) {
+    .dishes-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+  }
+
+  @media (max-width: 400px) {
+    .dishes-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .menu-footer {
+    text-align: center;
+    padding: 32px 0;
+    color: var(--color-text-light);
+    border-top: 1px solid var(--color-border);
+    margin-top: 16px;
+  }
+</style>

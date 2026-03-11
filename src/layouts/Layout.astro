@@ -1,0 +1,169 @@
+---
+interface Props {
+  title: string;
+}
+const { title } = Astro.props;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <a href="/" class="logo">🍜 私房菜单</a>
+    </div>
+  </header>
+  <main class="main">
+    <slot />
+  </main>
+  <footer class="footer">
+    <div class="container">
+      <p>用 ❤️ 烹饪每一道菜</p>
+    </div>
+  </footer>
+</body>
+</html>
+
+<style is:global>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  :root {
+    --color-primary: #e65100;
+    --color-primary-light: #ff9800;
+    --color-bg: #faf8f5;
+    --color-card: #ffffff;
+    --color-text: #333333;
+    --color-text-light: #666666;
+    --color-border: #e8e8e8;
+    --shadow: 0 2px 8px rgba(0,0,0,0.08);
+    --shadow-hover: 0 4px 16px rgba(0,0,0,0.12);
+    --radius: 12px;
+  }
+
+  html {
+    font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--color-bg);
+    color: var(--color-text);
+  }
+
+  body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 16px;
+  }
+
+  .header {
+    background: var(--color-card);
+    box-shadow: var(--shadow);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header .container {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    text-decoration: none;
+  }
+
+  .main {
+    flex: 1;
+    padding: 24px 0;
+  }
+
+  .footer {
+    background: var(--color-card);
+    border-top: 1px solid var(--color-border);
+    padding: 20px 0;
+    text-align: center;
+    color: var(--color-text-light);
+    font-size: 0.875rem;
+  }
+
+  /* Typography */
+  h1, h2, h3 {
+    font-weight: 700;
+    line-height: 1.4;
+  }
+
+  h1 {
+    font-size: 1.75rem;
+  }
+
+  h2 {
+    font-size: 1.375rem;
+    margin: 24px 0 12px;
+  }
+
+  h3 {
+    font-size: 1.125rem;
+  }
+
+  p {
+    line-height: 1.8;
+    margin: 8px 0;
+  }
+
+  /* Lists */
+  ul, ol {
+    padding-left: 20px;
+    margin: 12px 0;
+  }
+
+  li {
+    margin: 8px 0;
+    line-height: 1.7;
+  }
+
+  /* Markdown content */
+  .prose {
+    max-width: none;
+  }
+
+  .prose h2 {
+    color: var(--color-primary);
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--color-border);
+  }
+
+  .prose strong {
+    color: var(--color-primary);
+  }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    h1 {
+      font-size: 1.5rem;
+    }
+
+    .main {
+      padding: 16px 0;
+    }
+  }
+</style>
