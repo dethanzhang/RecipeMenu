@@ -9,7 +9,7 @@ const { dish } = Astro.props;
 const { name, price, category, tags, image } = dish.data;
 ---
 
-<a href={`/dish/${dish.slug}`} class="dish-card">
+<a href={`/dish/${dish.id}`} class="dish-card">
   <div class="image-wrapper">
     {image ? (
       <img src={image} alt={name} loading="lazy" />
