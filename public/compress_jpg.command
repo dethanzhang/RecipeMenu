@@ -11,8 +11,8 @@ echo ""
 INPUT_DIR="./images"
 OUTPUT_DIR="./images"
 QUALITY=60
-MAX_WIDTH=1000
-MIN_SIZE_KB=150  # 小于此大小的文件将被跳过（单位：KB）
+MAX_WIDTH=720
+MIN_SIZE_KB=120  # 小于此大小的文件将被跳过（单位：KB）
 
 # 检查ImageMagick是否安装
 if ! command -v magick &> /dev/null; then
