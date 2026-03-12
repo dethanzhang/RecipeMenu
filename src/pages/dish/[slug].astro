@@ -16,7 +16,8 @@ interface Props {
 
 const { dish } = Astro.props;
 const { Content } = await render(dish);
-const { name, price, category, tags, time, difficulty, image, ingredients } = dish.data;
+const name = dish.data.name ?? dish.id;
+const { price, category, tags, time, difficulty, image, ingredients } = dish.data;
 ---
 
 <Layout title={`${name} - 食谱详情`}>

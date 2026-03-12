@@ -6,7 +6,8 @@ interface Props {
 }
 
 const { dish } = Astro.props;
-const { name, price, category, tags, image } = dish.data;
+const name = dish.data.name ?? dish.id;
+const { price, category, tags, image } = dish.data;
 ---
 
 <a href={`/dish/${dish.id}`} class="dish-card">

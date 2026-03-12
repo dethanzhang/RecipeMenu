@@ -4,7 +4,7 @@ import { glob } from 'astro/loaders';
 const dishes = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/dishes' }),
   schema: z.object({
-    name: z.string(),
+    name: z.string().optional(),
     price: z.number(),
     category: z.string(),
     tags: z.array(z.string()).optional(),
