@@ -11,8 +11,24 @@ function getCategory(dish: typeof dishes[0]) {
   return parts.length > 1 ? parts[0] : '其他';
 }
 
+// 自定义分类排序顺序（在这里修改分类显示顺序）
+const categoryOrder = ['热菜','主食','素菜','凉菜','配菜零食'];
+
 // 按分类分组
-const categories = [...new Set(dishes.map(d => getCategory(d)))];
+const categories = [...new Set(dishes.map(d => getCategory(d)))]
+  // 按自定义顺序排序
+  .sort((a, b) => {
+    const indexA = categoryOrder.indexOf(a);
+    const indexB = categoryOrder.indexOf(b);
+    // 如果都在排序列表中，按列表顺序
+    if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+    // 如果只有一个在列表中，在列表中的排前面
+    if (indexA !== -1) return -1;
+    if (indexB !== -1) return 1;
+    // 都不在列表中，按字母排序
+    return a.localeCompare(b, 'zh-CN');
+  });
+
 const dishesByCategory = categories.map(cat => ({
   name: cat,
   dishes: dishes.filter(d => getCategory(d) === cat)
