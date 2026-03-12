@@ -178,16 +178,10 @@ const allTags = [...new Set(dishes.flatMap(d => d.data.tags || []))];
     height: 100%;
   }
 
-  @media (max-width: 640px) {
+  @media (max-width: 850px) {
     .dishes-grid {
       grid-template-columns: repeat(2, 1fr);
       gap: 12px;
-    }
-  }
-
-  @media (max-width: 400px) {
-    .dishes-grid {
-      grid-template-columns: 1fr;
     }
   }
 
