@@ -12,6 +12,7 @@ INPUT_DIR="./images"
 OUTPUT_DIR="./images"
 QUALITY=60
 MAX_WIDTH=1000
+MIN_SIZE_KB=150  # 小于此大小的文件将被跳过（单位：KB）
 
 # 检查ImageMagick是否安装
 if ! command -v magick &> /dev/null; then
@@ -39,17 +40,31 @@ echo "开始处理..."
 
 # 处理图片
 i=0
-find "$INPUT_DIR" -name "*.jpg" | while read file; do
+skipped=0
+while read file; do
     i=$((i+1))
     filename=$(basename "$file")
-    echo "[$i/$count] 正在压缩: $filename"
+
+    # 检查文件大小（跳过小于指定大小的文件）
+    filesize=$(stat -f%z "$file" 2>/dev/null || stat -c%s "$file" 2>/dev/null)
+    min_size_bytes=$((MIN_SIZE_KB * 1024))
+    if [ "$filesize" -lt "$min_size_bytes" ]; then
+        echo "[$i/$count] ⏭️  跳过: $filename (${filesize}字节 < ${MIN_SIZE_KB}KB)"
+        skipped=$((skipped+1))
+        continue
+    fi
+
+    echo "[$i/$count] 正在压缩: $filename (${filesize}字节)"
     magick "$file" \
         -resize "${MAX_WIDTH}x" \
         -quality $QUALITY \
         -strip \
         -interlace Plane \
         "${OUTPUT_DIR}/${filename}"
-done
+done < <(find "$INPUT_DIR" -name "*.jpg")
+
+echo ""
+echo "跳过 $skipped 个文件（小于${MIN_SIZE_KB}KB）"
 
 echo ""
 echo "✅ 批量压缩完成！"
