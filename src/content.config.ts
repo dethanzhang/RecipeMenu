@@ -6,7 +6,6 @@ const dishes = defineCollection({
   schema: z.object({
     name: z.string().optional(),
     price: z.number(),
-    category: z.string(),
     tags: z.array(z.string()).optional(),
     time: z.string().optional(),
     difficulty: z.enum(['简单', '中等', '困难']).optional(),

@@ -6,11 +6,20 @@ interface Props {
 }
 
 const { dish } = Astro.props;
-const name = dish.data.name ?? dish.id;
-const { price, category, tags, image } = dish.data;
+
+// 从文件路径提取 category（子文件夹名）和文件名
+const idParts = dish.id.split('/');
+const category = idParts.length > 1 ? idParts[0] : '';
+const fileName = idParts[idParts.length - 1];
+const name = dish.data.name ?? fileName;
+
+const { price, tags, image } = dish.data;
+
+// 生成 slug（用于 URL）
+const slug = dish.id.replace(/\//g, '-');
 ---
 
-<a href={`/dish/${dish.id}`} class="dish-card">
+<a href={`/dish/${slug}`} class="dish-card">
   <div class="image-wrapper">
     {image ? (
       <>

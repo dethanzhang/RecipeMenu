@@ -1,7 +1,6 @@
 ---
 name: 宫保鸡丁
 price: 42
-category: 热菜
 tags: [热门, 辣, 下饭]
 time: 30分钟
 difficulty: 简单

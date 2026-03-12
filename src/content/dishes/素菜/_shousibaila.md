@@ -1,7 +1,6 @@
 ---
 name: 手撕包菜
 price: 22
-category: 素菜
 tags: [下饭, 快手]
 time: 10分钟
 difficulty: 简单

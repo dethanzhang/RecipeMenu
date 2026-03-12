@@ -3,9 +3,9 @@ import Layout from '../../layouts/Layout.astro';
 import { getCollection, render, type CollectionEntry } from 'astro:content';
 
 export async function getStaticPaths() {
-  const dishes = await getCollection('dishes', ({ id }) => !id.startsWith('_'));
+  const dishes = await getCollection('dishes', ({ id }) => !id.includes('/_') && !id.startsWith('_'));
   return dishes.map(dish => ({
-    params: { slug: dish.id },
+    params: { slug: dish.id.replace(/\//g, '-') },
     props: { dish },
   }));
 }
@@ -16,8 +16,12 @@ interface Props {
 
 const { dish } = Astro.props;
 const { Content } = await render(dish);
-const name = dish.data.name ?? dish.id;
-const { price, category, tags, time, difficulty, image, ingredients } = dish.data;
+const name = dish.data.name ?? dish.id.split('/').pop() ?? dish.id;
+
+// 从文件路径提取 category
+const category = dish.id.includes('/') ? dish.id.split('/')[0] : '其他';
+
+const { price, tags, time, difficulty, image, ingredients } = dish.data;
 ---
 
 <Layout title={`${name} - 食谱详情`}>
