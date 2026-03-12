@@ -16,14 +16,8 @@ const dishesByCategory = categories.map(cat => ({
 const allTags = [...new Set(dishes.flatMap(d => d.data.tags || []))];
 ---
 
-<Layout title="私房菜单">
+<Layout title="菜单">
   <div class="container">
-    <!-- 顶部介绍 -->
-    <section class="hero">
-      <h1>今日推荐</h1>
-      <p class="subtitle">精心烹制，美味可口</p>
-    </section>
-
     <!-- 标签筛选 -->
     {allTags.length > 0 && (
       <section class="filter-section">
@@ -91,23 +85,8 @@ const allTags = [...new Set(dishes.flatMap(d => d.data.tags || []))];
 </script>
 
 <style>
-  .hero {
-    text-align: center;
-    padding: 32px 0 24px;
-  }
-
-  .hero h1 {
-    color: var(--color-primary);
-    margin-bottom: 8px;
-  }
-
-  .subtitle {
-    color: var(--color-text-light);
-    font-size: 1rem;
-  }
-
   .filter-section {
-    margin-bottom: 24px;
+    margin: 24px 0;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
   }
@@ -120,25 +99,31 @@ const allTags = [...new Set(dishes.flatMap(d => d.data.tags || []))];
   }
 
   .tag-btn {
-    padding: 8px 16px;
-    border: 1px solid var(--color-border);
+    padding: 10px 20px;
+    border: 2px solid transparent;
     background: var(--color-card);
-    border-radius: 20px;
+    border-radius: 24px;
     font-size: 0.875rem;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: var(--transition);
     color: var(--color-text);
+    box-shadow: var(--shadow);
+    font-weight: 500;
+    white-space: nowrap;
   }
 
   .tag-btn:hover {
-    border-color: var(--color-primary);
+    border-color: var(--color-primary-light);
     color: var(--color-primary);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
   }
 
   .tag-btn.active {
-    background: var(--color-primary);
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
     color: white;
-    border-color: var(--color-primary);
+    border-color: transparent;
+    box-shadow: 0 4px 12px rgba(230, 81, 0, 0.3);
   }
 
   .category-section {
@@ -149,15 +134,26 @@ const allTags = [...new Set(dishes.flatMap(d => d.data.tags || []))];
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-bottom: 16px;
-    padding-left: 12px;
+    margin-bottom: 20px;
+    padding: 12px 16px;
+    background: linear-gradient(90deg, var(--color-card) 0%, transparent 100%);
     border-left: 4px solid var(--color-primary);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-text);
+    box-shadow: var(--shadow);
   }
 
   .dishes-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     gap: 20px;
+    align-items: stretch;
+  }
+
+  .dishes-grid > :global(*) {
+    height: 100%;
   }
 
   @media (max-width: 640px) {
@@ -175,9 +171,19 @@ const allTags = [...new Set(dishes.flatMap(d => d.data.tags || []))];
 
   .menu-footer {
     text-align: center;
-    padding: 32px 0;
+    padding: 40px 0;
     color: var(--color-text-light);
-    border-top: 1px solid var(--color-border);
-    margin-top: 16px;
+    margin-top: 24px;
+    font-size: 0.9375rem;
+  }
+
+  .menu-footer p {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #fff8e1 0%, #ffe0b2 100%);
+    border-radius: 24px;
+    font-weight: 500;
   }
 </style>

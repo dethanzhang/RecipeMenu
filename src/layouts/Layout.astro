@@ -18,10 +18,10 @@ const { title } = Astro.props;
 <body>
   <header class="header">
     <div class="container">
-      <a href="/" class="logo">🍜 私房菜单</a>
+      <a href="/" class="logo">菜单</a>
     </div>
   </header>
-  <main class="main">
+  <main class="main animate-fadeIn">
     <slot />
   </main>
   <footer class="footer">
@@ -42,14 +42,19 @@ const { title } = Astro.props;
   :root {
     --color-primary: #e65100;
     --color-primary-light: #ff9800;
+    --color-primary-dark: #bf360c;
     --color-bg: #faf8f5;
     --color-card: #ffffff;
-    --color-text: #333333;
+    --color-text: #2d2d2d;
     --color-text-light: #666666;
     --color-border: #e8e8e8;
-    --shadow: 0 2px 8px rgba(0,0,0,0.08);
-    --shadow-hover: 0 4px 16px rgba(0,0,0,0.12);
-    --radius: 12px;
+    --color-accent: #ffd54f;
+    --shadow: 0 2px 8px rgba(0,0,0,0.06);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+    --shadow-hover: 0 8px 24px rgba(230, 81, 0, 0.15);
+    --radius: 16px;
+    --radius-sm: 12px;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   html {
@@ -90,6 +95,14 @@ const { title } = Astro.props;
     font-weight: 700;
     color: var(--color-primary);
     text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: var(--transition);
+  }
+
+  .logo:hover {
+    transform: scale(1.02);
   }
 
   .main {
@@ -100,10 +113,36 @@ const { title } = Astro.props;
   .footer {
     background: var(--color-card);
     border-top: 1px solid var(--color-border);
-    padding: 20px 0;
+    padding: 24px 0;
     text-align: center;
     color: var(--color-text-light);
     font-size: 0.875rem;
+    margin-top: auto;
+  }
+
+  /* Animations */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .animate-fadeInUp {
+    animation: fadeInUp 0.6s ease-out forwards;
+  }
+
+  .animate-fadeIn {
+    animation: fadeIn 0.4s ease-out forwards;
   }
 
   /* Typography */
