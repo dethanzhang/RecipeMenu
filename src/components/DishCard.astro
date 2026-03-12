@@ -13,7 +13,10 @@ const category = idParts.length > 1 ? idParts[0] : '';
 const fileName = idParts[idParts.length - 1];
 const name = dish.data.name ?? fileName;
 
-const { tags, image } = dish.data;
+const { tags, image: dataImage } = dish.data;
+
+// 如果没有指定 image，则根据 name 自动生成 /images/{菜名}.jpg
+const image = dataImage ?? `/images/${name}.jpg`;
 
 // 生成 slug（用于 URL）
 const slug = dish.id.replace(/\//g, '-');

@@ -4,7 +4,6 @@ price: 58
 tags: [热门, 辣]
 time: 90分钟
 difficulty: 中等
-image: /images/hongshaorou.jpg
 ingredients:
   - 五花肉 500g
   - 冰糖 30g

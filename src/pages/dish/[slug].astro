@@ -21,7 +21,10 @@ const name = dish.data.name ?? dish.id.split('/').pop() ?? dish.id;
 // 从文件路径提取 category
 const category = dish.id.includes('/') ? dish.id.split('/')[0] : '其他';
 
-const { price, tags, time, difficulty, image, ingredients } = dish.data;
+const { price, tags, time, difficulty, image: dataImage, ingredients } = dish.data;
+
+// 如果没有指定 image，则根据 name 自动生成 /images/{菜名}.jpg
+const image = dataImage ?? `/images/${name}.jpg`;
 ---
 
 <Layout title={`${name} - 食谱详情`}>

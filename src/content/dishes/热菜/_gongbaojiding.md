@@ -4,7 +4,6 @@ price: 42
 tags: [热门, 辣, 下饭]
 time: 30分钟
 difficulty: 简单
-image: /images/gongbaojiding.jpg
 ingredients:
   - 鸡胸肉 300g
   - 花生米 50g

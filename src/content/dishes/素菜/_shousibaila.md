@@ -4,7 +4,6 @@ price: 22
 tags: [下饭, 快手]
 time: 10分钟
 difficulty: 简单
-image: /images/shousibaila.jpg
 ingredients:
   - 包菜 半个
   - 干辣椒 5个
