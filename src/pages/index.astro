@@ -39,42 +39,154 @@ const allTags = [...new Set(dishes.flatMap(d => d.data.tags || []))];
 ---
 
 <Layout title="菜单">
-  <div class="container">
-    <!-- 标签筛选 -->
-    {allTags.length > 0 && (
-      <section class="filter-section">
-        <div class="tags-filter" id="tags-filter">
-          <button class="tag-btn active" data-filter="all">全部</button>
-          {allTags.map(tag => (
-            <button class="tag-btn" data-filter={tag}>{tag}</button>
-          ))}
-        </div>
-      </section>
-    )}
+  <div class="page-wrapper">
+    <!-- 左侧侧边栏 -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <button class="toggle-btn" id="toggle-sidebar" aria-label="收起侧边栏">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M11 17l-5-5 5-5M18 17l-5-5 5-5"/>
+          </svg>
+        </button>
+        <span class="sidebar-title">菜单导航</span>
+      </div>
 
-    <!-- 菜品列表 -->
-    <div id="menu-content">
-      {dishesByCategory.map(({ name, dishes }) => (
-        <section class="category-section" data-category={name}>
-          <h2 class="category-title">{name}</h2>
-          <div class="dishes-grid">
-            {dishes.map(dish => (
-              <DishCard dish={dish} />
+      <!-- 分类导航 -->
+      <nav class="category-nav">
+        <h3>菜品分类</h3>
+        <ul class="nav-list">
+          {dishesByCategory.map(({ name, dishes }) => (
+            <li>
+              <a href={`#category-${name}`} class="nav-link" data-category={name}>
+                <span class="nav-name">{name}</span>
+                <span class="nav-count">{dishes.length}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
+      <!-- 标签筛选 -->
+      {allTags.length > 0 && (
+        <div class="filter-nav">
+          <h3>标签筛选</h3>
+          <div class="tags-filter" id="tags-filter">
+            <button class="tag-btn active" data-filter="all">全部</button>
+            {allTags.map(tag => (
+              <button class="tag-btn" data-filter={tag}>{tag}</button>
             ))}
           </div>
-        </section>
-      ))}
-    </div>
+        </div>
+      )}
+    </aside>
 
-    <!-- 简单计数 -->
-    <div class="menu-footer">
-      <p>共 {dishes.length} 道美味</p>
-    </div>
+    <!-- 展开按钮 (侧边栏收起时显示) -->
+    <button class="expand-btn" id="expand-sidebar" aria-label="展开侧边栏">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M13 17l5-5-5-5M6 17l5-5-5-5"/>
+      </svg>
+      <span>菜单</span>
+    </button>
+
+    <!-- 主内容区 -->
+    <main class="main-content" id="main-content">
+      <!-- 菜品列表 -->
+      <div id="menu-content">
+        {dishesByCategory.map(({ name, dishes }) => (
+          <section class="category-section" id={`category-${name}`} data-category={name}>
+            <h2 class="category-title">{name}</h2>
+            <div class="dishes-grid">
+              {dishes.map(dish => (
+                <DishCard dish={dish} />
+              ))}
+            </div>
+          </section>
+        ))}
+      </div>
+
+      <!-- 简单计数 -->
+      <div class="menu-footer">
+        <p>共 {dishes.length} 道美味</p>
+      </div>
+    </main>
   </div>
 </Layout>
 
 <script>
-  // 简单的标签筛选功能
+  // 侧边栏展开/收起
+  const sidebar = document.getElementById('sidebar');
+  const mainContent = document.getElementById('main-content');
+  const toggleBtn = document.getElementById('toggle-sidebar');
+  const expandBtn = document.getElementById('expand-sidebar');
+
+  function toggleSidebar() {
+    sidebar.classList.toggle('collapsed');
+    mainContent.classList.toggle('sidebar-collapsed');
+    if (expandBtn) expandBtn.classList.toggle('visible');
+    localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+  }
+
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', toggleSidebar);
+  }
+
+  if (expandBtn) {
+    expandBtn.addEventListener('click', toggleSidebar);
+  }
+
+  // 恢复侧边栏状态
+  if (localStorage.getItem('sidebarCollapsed') === 'true') {
+    sidebar.classList.add('collapsed');
+    mainContent.classList.add('sidebar-collapsed');
+    if (expandBtn) expandBtn.classList.add('visible');
+  }
+
+  // 分类导航高亮
+  const navLinks = document.querySelectorAll('.nav-link');
+  const categorySections = document.querySelectorAll('.category-section');
+
+  // 点击导航链接平滑滚动
+  navLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const category = link.dataset.category;
+      const targetSection = document.getElementById(`category-${category}`);
+      if (targetSection) {
+        const headerOffset = 20;
+        const elementPosition = targetSection.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+      }
+    });
+  });
+
+  // 滚动时高亮当前分类
+  function updateActiveNav() {
+    let current = '';
+    categorySections.forEach(section => {
+      const sectionTop = section.offsetTop;
+      const sectionHeight = section.clientHeight;
+      if (window.pageYOffset >= sectionTop - 100) {
+        current = section.dataset.category;
+      }
+    });
+
+    navLinks.forEach(link => {
+      link.classList.remove('active');
+      if (link.dataset.category === current) {
+        link.classList.add('active');
+      }
+    });
+  }
+
+  window.addEventListener('scroll', updateActiveNav);
+  updateActiveNav();
+
+  // 标签筛选功能
   const tagButtons = document.querySelectorAll('.tag-btn');
   const dishCards = document.querySelectorAll('.dish-card');
 
@@ -107,61 +219,233 @@ const allTags = [...new Set(dishes.flatMap(d => d.data.tags || []))];
 </script>
 
 <style>
-  .filter-section {
-    margin: 24px 0;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+  /* 页面布局 */
+  .page-wrapper {
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* 侧边栏 */
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 60px; /* header 高度 */
+    height: calc(100vh - 60px);
+    width: 260px;
+    background: var(--color-card);
+    border-right: 1px solid rgba(0, 0, 0, 0.08);
+    padding: 20px;
+    overflow-y: auto;
+    z-index: 99;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.08);
+  }
+
+  .sidebar.collapsed {
+    transform: translateX(-100%);
+    box-shadow: none;
+  }
+
+  /* 侧边栏头部 */
+  .sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  }
+
+  .sidebar-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--color-text);
+  }
+
+  .toggle-btn {
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: transparent;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-light);
+    transition: var(--transition);
+  }
+
+  .toggle-btn:hover {
+    background: rgba(230, 81, 0, 0.1);
+    color: var(--color-primary);
+  }
+
+  /* 展开按钮 */
+  .expand-btn {
+    position: fixed;
+    left: 0;
+    top: 50%;
+    top: calc(50% + 30px); /* 考虑 header 高度 */
+    transform: translateY(-50%) translateX(-100%);
+    z-index: 98;
+    background: var(--color-card);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-left: none;
+    border-radius: 0 12px 12px 0;
+    padding: 12px 8px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 4px 0 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, background 0.2s;
+    color: var(--color-primary);
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .expand-btn.visible {
+    transform: translateY(-50%) translateX(0);
+  }
+
+  .expand-btn:hover {
+    background: var(--color-primary);
+    color: white;
+  }
+
+  /* 分类导航 */
+  .category-nav {
+    margin-bottom: 28px;
+  }
+
+  .category-nav h3,
+  .filter-nav h3 {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-text-light);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+    padding-left: 4px;
+  }
+
+  .nav-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .nav-list li {
+    margin-bottom: 4px;
+  }
+
+  .nav-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: var(--color-text);
+    transition: var(--transition);
+    font-size: 0.9375rem;
+  }
+
+  .nav-link:hover {
+    background: rgba(230, 81, 0, 0.08);
+    color: var(--color-primary);
+  }
+
+  .nav-link.active {
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(230, 81, 0, 0.25);
+  }
+
+  .nav-name {
+    font-weight: 500;
+  }
+
+  .nav-count {
+    font-size: 0.75rem;
+    background: rgba(0, 0, 0, 0.06);
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-weight: 600;
+  }
+
+  .nav-link.active .nav-count {
+    background: rgba(255, 255, 255, 0.25);
+  }
+
+  /* 标签筛选 */
+  .filter-nav {
+    padding-top: 20px;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
   }
 
   .tags-filter {
     display: flex;
+    flex-wrap: wrap;
     gap: 8px;
-    padding-bottom: 4px;
-    white-space: nowrap;
   }
 
   .tag-btn {
-    padding: 10px 20px;
-    border: 2px solid transparent;
-    background: var(--color-card);
-    border-radius: 24px;
-    font-size: 0.875rem;
+    padding: 6px 12px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    background: var(--color-bg);
+    border-radius: 20px;
+    font-size: 0.8125rem;
     cursor: pointer;
     transition: var(--transition);
     color: var(--color-text);
-    box-shadow: var(--shadow);
     font-weight: 500;
-    white-space: nowrap;
   }
 
   .tag-btn:hover {
     border-color: var(--color-primary-light);
     color: var(--color-primary);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
   }
 
   .tag-btn.active {
     background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
     color: white;
     border-color: transparent;
-    box-shadow: 0 4px 12px rgba(230, 81, 0, 0.3);
+    box-shadow: 0 2px 8px rgba(230, 81, 0, 0.25);
   }
 
+  /* 主内容区 */
+  .main-content {
+    margin-left: 260px;
+    padding: 24px 32px;
+    width: calc(100% - 260px);
+    transition: margin-left 0.3s ease, width 0.3s ease;
+  }
+
+  .main-content.sidebar-collapsed {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  /* 分类区域 */
   .category-section {
-    margin-bottom: 32px;
+    margin-bottom: 48px;
+    scroll-margin-top: 20px;
   }
 
   .category-title {
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-bottom: 20px;
-    padding: 12px 16px;
+    margin-bottom: 24px;
+    padding: 14px 20px;
     background: linear-gradient(90deg, var(--color-card) 0%, transparent 100%);
     border-left: 4px solid var(--color-primary);
     border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-    font-size: 1.25rem;
+    font-size: 1.5rem;
     font-weight: 700;
     color: var(--color-text);
     box-shadow: var(--shadow);
@@ -169,8 +453,8 @@ const allTags = [...new Set(dishes.flatMap(d => d.data.tags || []))];
 
   .dishes-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 24px;
     align-items: stretch;
   }
 
@@ -178,18 +462,11 @@ const allTags = [...new Set(dishes.flatMap(d => d.data.tags || []))];
     height: 100%;
   }
 
-  @media (max-width: 850px) {
-    .dishes-grid {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-    }
-  }
-
   .menu-footer {
     text-align: center;
     padding: 40px 0;
     color: var(--color-text-light);
-    margin-top: 24px;
+    margin-top: 48px;
     font-size: 0.9375rem;
   }
 
@@ -201,5 +478,52 @@ const allTags = [...new Set(dishes.flatMap(d => d.data.tags || []))];
     background: linear-gradient(135deg, #fff8e1 0%, #ffe0b2 100%);
     border-radius: 24px;
     font-weight: 500;
+  }
+
+  /* 移动端适配 */
+  @media (max-width: 768px) {
+    .sidebar {
+      width: 280px;
+      top: 60px;
+      height: calc(100vh - 60px);
+    }
+
+    .main-content {
+      margin-left: 0;
+      padding: 16px;
+      width: 100%;
+    }
+
+    .main-content.sidebar-collapsed {
+      margin-left: 0;
+      width: 100%;
+    }
+
+    .expand-btn {
+      top: 76px; /* header + some padding */
+      right: 16px;
+      left: auto;
+      transform: translateY(0) translateX(0);
+      flex-direction: row;
+      padding: 10px 14px;
+      border-radius: 24px;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      background: var(--color-card);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .expand-btn.visible {
+      transform: translateY(0);
+    }
+
+    .dishes-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .category-title {
+      font-size: 1.125rem;
+      padding: 10px 14px;
+    }
   }
 </style>
