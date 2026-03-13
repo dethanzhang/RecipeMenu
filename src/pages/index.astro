@@ -231,7 +231,7 @@ const allTags = [...new Set(dishes.flatMap(d => d.data.tags || []))];
     left: 0;
     top: 60px; /* header 高度 */
     height: calc(100vh - 60px);
-    width: 260px;
+    width: 200px;
     background: var(--color-card);
     border-right: 1px solid rgba(0, 0, 0, 0.08);
     padding: 20px;
@@ -419,9 +419,9 @@ const allTags = [...new Set(dishes.flatMap(d => d.data.tags || []))];
 
   /* 主内容区 */
   .main-content {
-    margin-left: 260px;
+    margin-left: 200px;
     padding: 24px 32px;
-    width: calc(100% - 260px);
+    width: calc(100% - 200px);
     transition: margin-left 0.3s ease, width 0.3s ease;
   }
 
@@ -483,7 +483,7 @@ const allTags = [...new Set(dishes.flatMap(d => d.data.tags || []))];
   /* 移动端适配 */
   @media (max-width: 768px) {
     .sidebar {
-      width: 280px;
+      width: 220px;
       top: 60px;
       height: calc(100vh - 60px);
     }
